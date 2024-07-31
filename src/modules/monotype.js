@@ -5,7 +5,7 @@ goog.require('webfont.Font');
 /**
 webfont.load({
   monotype: {
-    projectId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'//this is your Fonts.com Web fonts projectId
+	projectId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'//this is your Fonts.com Web fonts projectId
   }
 });
 */
@@ -14,9 +14,9 @@ webfont.load({
  * @constructor
  * @implements {webfont.FontModule}
  */
-webfont.modules.Monotype = function(domHelper, configuration) {
-  this.domHelper_ = domHelper;
-  this.configuration_ = configuration;
+webfont.modules.Monotype = function (domHelper, configuration) {
+	this.domHelper_ = domHelper;
+	this.configuration_ = configuration;
 };
 
 /**
@@ -46,65 +46,71 @@ webfont.modules.Monotype.SCRIPTID = '__MonotypeAPIScript__';
  */
 webfont.modules.Monotype.CONFIGURATION = '__MonotypeConfiguration__';
 
-goog.scope(function() {
-  var Monotype = webfont.modules.Monotype,
-    Font = webfont.Font;
-    
+goog.scope(function () {
+	var Monotype = webfont.modules.Monotype,
+		Font = webfont.Font;
 
-  Monotype.prototype.getScriptSrc = function(projectId, version) {
-    var api = (this.configuration_['api'] || 'https://fast.fonts.net/jsapi')
-    return api + '/' + projectId + '.js' + (version ? '?v=' + version : '');
-  };
 
-  Monotype.prototype.load = function(onReady) {
-    var self = this;
-    var projectId = self.configuration_['projectId'];
-    var version = self.configuration_['version'];
-  
-      
-    function checkAndLoadIfDownloaded() {
-      if (loadWindow[Monotype.HOOK + projectId]) {
-        var mti_fnts = loadWindow[Monotype.HOOK + projectId](),
-            fonts = [],
-            fntVariation;
+	Monotype.prototype.getScriptSrc = function (projectId, version) {
+		var api = (this.configuration_['api'] || 'https://fast.fonts.net/jsapi')
+		return api + '/' + projectId + '.js' + (version ? '?v=' + version : '');
+	};
 
-        if (mti_fnts) {
-          for (var i = 0; i < mti_fnts.length; i++) {
-            var fnt = mti_fnts[i]["fontfamily"];
-            
-            //Check if font-style and font-weight is available
-            if (mti_fnts[i]["fontStyle"] != undefined && mti_fnts[i]["fontWeight"] != undefined) {
-              fntVariation = mti_fnts[i]["fontStyle"] + mti_fnts[i]["fontWeight"];
-              fonts.push(new Font(fnt, fntVariation));
-            } else {
-              fonts.push(new Font(fnt));
-            }
-          }
-        }
-        onReady(fonts);
-      } else {
-        setTimeout(function() {
-          checkAndLoadIfDownloaded();
-        }, 50);
-      }
-    }
-    if (projectId) {
-      var loadWindow = self.domHelper_.getLoadWindow();
+	Monotype.prototype.load = function (onReady) {
+		var self = this;
+		var projectId = self.configuration_['projectId'];
+		var version = self.configuration_['version'];
 
-      var script = this.domHelper_.loadScript(self.getScriptSrc(projectId, version), function(err) {
-        if (err) {
-          onReady([]);
-        } else {
-          loadWindow[Monotype.CONFIGURATION+ projectId] = function() {
-           return  self.configuration_;
-          };
-            
-          checkAndLoadIfDownloaded();
-        }
-      });
-      script["id"] = Monotype.SCRIPTID + projectId;
-    } else {
-      onReady([]);
-    }
-  };
+
+		function checkAndLoadIfDownloaded() {
+			if (loadWindow[Monotype.HOOK + projectId]) {
+				var mti_fnts = loadWindow[Monotype.HOOK + projectId](),
+					fonts = [],
+					fntVariation;
+
+				if (mti_fnts) {
+					for (var i = 0; i < mti_fnts.length; i++) {
+						var fnt = mti_fnts[i]["fontfamily"];
+
+						//Check if font-style and font-weight is available
+						if (mti_fnts[i]["fontStyle"] != undefined && mti_fnts[i]["fontWeight"] != undefined) {
+							fntVariation = mti_fnts[i]["fontStyle"] + mti_fnts[i]["fontWeight"];
+							fonts.push(new Font(fnt, fntVariation));
+						} else {
+							fonts.push(new Font(fnt));
+						}
+					}
+				}
+				onReady(fonts);
+			} else {
+				setTimeout(function () {
+					checkAndLoadIfDownloaded();
+				}, 50);
+			}
+		}
+		if (projectId) {
+			var loadWindow = self.domHelper_.getLoadWindow();
+
+			var script = this.domHelper_.loadScript(self.getScriptSrc(projectId, version), function (err) {
+				if (err) {
+					onReady([]);
+				} else {
+					loadWindow[Monotype.CONFIGURATION + projectId] = function () {
+						return self.configuration_;
+					};
+
+					checkAndLoadIfDownloaded();
+				}
+			});
+			script["id"] = Monotype.SCRIPTID + projectId;
+		} else {
+			onReady([]);
+		}
+	};
+
+	Monotype.prototype.getFontApiUrl = function () {
+		console.log(new Error('Monotype does not support loading fonts by url.'));
+
+		return [''];
+	};
 });

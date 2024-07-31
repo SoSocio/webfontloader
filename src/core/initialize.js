@@ -79,7 +79,8 @@ if (INCLUDE_GOOGLE_MODULE) {
 }
 
 var exports = {
-  'load': goog.bind(webFontLoader.load, webFontLoader)
+  'load': goog.bind(webFontLoader.load, webFontLoader),
+  'getFontApiUrl': goog.bind(webFontLoader.getFontApiUrl, webFontLoader)
 };
 
 if (typeof define === "function" && define.amd) {
@@ -93,5 +94,6 @@ if (typeof define === "function" && define.amd) {
 
   if (window[WEBFONT_CONFIG]) {
     webFontLoader.load(window[WEBFONT_CONFIG]);
+    webFontLoader.getFontApiUrl(window[WEBFONT_CONFIG]);
   }
 }
